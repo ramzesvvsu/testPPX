@@ -32,20 +32,20 @@ class PlayField():
         for y in range(self.y):
             for x in range(self.x):
                 if not self.playFieldArea[y][x].number == '0':
-                    newCopyplayFieldArea = copy.deepcopy(self.playFieldArea)
+                    #newCopyplayFieldArea = copy.deepcopy(self.playFieldArea)
                     decideList = []
                     # print(f'x={x}, y={y}')
                     stepList = [{'y': y, 'x': x}]
                     if not self.playFieldArea[y][x].number == '1':
-                        self.foundConnection(newCopyplayFieldArea, x, y, decideList, stepList,
+                        self.foundConnection(self.playFieldArea, x, y, decideList, stepList,
                         self.playFieldArea[y][x].number)
                     else:
                         decideList.append(stepList)
                     print(f'x={x}, y={y}, n={self.playFieldArea[y][x].number}, len={len(decideList)}')
-                    newCopyplayFieldArea = None
+                    #newCopyplayFieldArea = None
 
     def foundConnection(self, playFieldArea, x, y, decideList, stepList, number):
-        countSteps = playFieldArea[y][x].countSteps
+        countSteps = int(number) - len(stepList)
 
         steps = []
         steps.append({'x': -1, 'y': 0, 'side': 'L'})
@@ -58,17 +58,13 @@ class PlayField():
                 side = currentStep.get('side')
                 xAdd = currentStep.get('x')
                 yAdd = currentStep.get('y')
-                # print(f'side={side}, x = {xAdd}, y = {yAdd}')
                 if playFieldArea[y][x].canStep(side):
-                    if playFieldArea[y + yAdd][x + xAdd].uuid == None and not countSteps == 1:
-                        newCopyplayFieldArea = copy.deepcopy(playFieldArea)
-                        newCopyplayFieldArea[y + yAdd][x + xAdd].uuid = playFieldArea[y][x].uuid
-                        newCopyplayFieldArea[y + yAdd][x + xAdd].countSteps = playFieldArea[y][x].countSteps - 1
+                    have_step = stepList.count({'y': (y + yAdd), 'x': (x + xAdd)})
+                    if have_step == 0 and playFieldArea[y + yAdd][x + xAdd].number == '0' and not countSteps == 1:
                         newStepList = copy.copy(stepList)
                         newStepList.append({'y': (y + yAdd), 'x': (x + xAdd)})
-                        self.foundConnection(newCopyplayFieldArea, x + xAdd, y + yAdd, decideList, newStepList, number)
-                        newCopyplayFieldArea = None
-                    elif (playFieldArea[y + yAdd][x + xAdd].number == number and countSteps == 1):
+                        self.foundConnection(playFieldArea, x + xAdd, y + yAdd, decideList, newStepList, number)
+                    elif playFieldArea[y + yAdd][x + xAdd].number == number and countSteps == 1:
                         decideList.append(stepList + [{'y': (y + yAdd), 'x': (x + xAdd)}])
 
 
